@@ -453,7 +453,7 @@ def ext_Information_from_file(posiStart, id_MTBLS=None):
 
 ##BEGIN: METHODS FOR SECUNDARY STUFFS
 def timeTotal(sec):
-    print("Time elapsed: " +  str(datetime.timedelta(sec)))
+    print("Time elapsed: " +  str(datetime.timedelta(seconds  = sec)))
 
 def write_to_File(nameFile, content, mode_Open):
     #Create, Write, and Close a file. mode_Open: a, w, wb  
