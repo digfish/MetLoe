@@ -617,13 +617,14 @@ def get_EvaluationScore(id_MTBLS=None):
         print '\t' + MTBLSentry
         #Search for empty fields = NONE
         print "\t\tTEST: PARSING"
-        parsingScore = REST_SCOREparsing(MTBLSentry, db_onto)
+        parsingScore, relScore = REST_SCOREparsing(MTBLSentry, db_onto)
         print "\t\t\tPARSE_SCORE: " + str(parsingScore) + " of 1(max_value)"
+        print "\t\t\tPARSE_SCORE_relat: " + str(relScore) + " % ontologies were found!"
         
         print "\t\tTEST: LEXICAL"
-        score, relScore = REST_SCOREOntoLexic(MTBLSentry)
+        score = REST_SCOREOntoLexic(MTBLSentry)
         print "\t\t\tLEXIC_SCORE_efect: " + str(score)
-        print "\t\t\tLEXIC_SCORE_relat: " + str(relScore) + " % ontologies were found!"
+        
         
         ##print '\tEXTRACT METRICS OF ONTOLOGIES'
         #for ontol in ontologies :
@@ -644,12 +645,12 @@ def get_EvaluationScore(id_MTBLS=None):
                 SelfLinkOntolEq, SelfLinkOntolCont = REST_getNode_OntologyTerm(org, ontol)
                 print "\t\t\t\t\tRESULTS:"
                 print "\t\t\t\t\t\tEqual Ontology: " + str(len(SelfLinkOntolEq))
-                for elem in SelfLinkOntolEq:
-                    print "\t\t\t\t\t\t\t" + REST_recommender_OntoID(get_json(elem))
+                #for elem in SelfLinkOntolEq:
+                #    print "\t\t\t\t\t\t\t" + REST_recommender_OntoID(get_json(elem))
                 print "\t\t\t\t\t\tContain Ontology: " + str(len(SelfLinkOntolCont))
-                for elem in SelfLinkOntolCont:
-                    print "\t\t\t\t\t\t\t" + REST_recommender_OntoID(get_json(elem))
-                #               
+                #for elem in SelfLinkOntolCont:
+                #    print "\t\t\t\t\t\t\t" + REST_recommender_OntoID(get_json(elem))
+                ##               
                 print '\t\t\tTEST: Quality of Ontologies used in MTBLS entries'
                 OntologiesByRecommender = REST_get_Recommender(MTBLSentry, org, ontol)
                 REST_SCOREDepthMTBLSentry(org, ontol, OntologiesByRecommender)
@@ -814,7 +815,7 @@ def REST_SCOREparsing(id_MTBLS, db_onto):
                 
     return score, str(2*relFound/(len(line))*100)
         
-def REST_SCOREOntoLexic(id_MTBLS,db_onto):
+def REST_SCOREOntoLexic(id_MTBLS):
 #Compute syntactic analysis of an entry
     w_org = 0.5
     w_ref = 0.7
