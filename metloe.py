@@ -586,7 +586,7 @@ def get_EvaluationScore(id_MTBLS=None):
     counter = 0
     ontologies = [] #Store the ontologies extracted!!!
     organism = []
-    
+    print MTBLSentries
     db_onto = REST_getAllOntologiesBioportal()#get updated database with all ontologies available in bioportal
    
     for MTBLSentry in MTBLSentries :
@@ -639,21 +639,21 @@ def get_EvaluationScore(id_MTBLS=None):
             if org != 'NONE' and ontol != 'NONE':
                 
                 #print '\t\t\t' + str(org)
-                print '\t\t\t\tTEST: Quality of MTBLS entries'
+                print '\t\t\tTEST: Quality of MTBLS entries'
                 #
                 #Quality of MTBLS entries!!!
                 SelfLinkOntolEq, SelfLinkOntolCont = REST_getNode_OntologyTerm(org, ontol)
-                print "\t\t\t\t\tRESULTS:"
-                print "\t\t\t\t\t\tEqual Ontology: " + str(len(SelfLinkOntolEq))
+                print "\t\t\t\tRESULTS:"
+                print "\t\t\t\t\tEqual Ontology: " + str(len(SelfLinkOntolEq))
                 #for elem in SelfLinkOntolEq:
                 #    print "\t\t\t\t\t\t\t" + REST_recommender_OntoID(get_json(elem))
-                print "\t\t\t\t\t\tContain Ontology: " + str(len(SelfLinkOntolCont))
+                print "\t\t\t\t\tContain Ontology: " + str(len(SelfLinkOntolCont))
                 #for elem in SelfLinkOntolCont:
                 #    print "\t\t\t\t\t\t\t" + REST_recommender_OntoID(get_json(elem))
                 ##               
                 print '\t\t\tTEST: Quality of Ontologies used in MTBLS entries'
                 OntologiesByRecommender = REST_get_Recommender(MTBLSentry, org, ontol)
-                REST_SCOREDepthMTBLSentry(org, ontol, OntologiesByRecommender)
+                print "\t\t\tSCORE: " + str(REST_SCOREDepthMTBLSentry(org, ontol, OntologiesByRecommender))
             else:
                 print "\t\t\tEmpty Organism :: "+ontol if org == 'NONE' else "\t\t\t" + org + " :: Empty Ontology"
             #REST_get_Recommender(MTBLSentry, org)
@@ -813,7 +813,7 @@ def REST_SCOREparsing(id_MTBLS, db_onto):
                     score += score_fREF_nfONT
                 break;
                 
-    return score, str(2*relFound/(len(line))*100)
+    return score, str(relFound/(2*len(line))*100)
         
 def REST_SCOREOntoLexic(id_MTBLS):
 #Compute syntactic analysis of an entry
@@ -889,7 +889,7 @@ def REST_SCOREDepthMTBLSentry(term, ontology, OntologiesByRecommender):
                 haschildren = REST_recommender_HasChild(elemSimjson)
                 #break
         else:
-            print "The ontology " + ontology + " does not exists"
+            print "\t\t\t\tThe ontology " + ontology + " does not exists"
             score = 0
             return score
     
@@ -899,20 +899,18 @@ def REST_SCOREDepthMTBLSentry(term, ontology, OntologiesByRecommender):
     score = w_Children  if haschildren == "Yes" else w_Children/treedepth + w_Children
     
     for i, onto in enumerate(OntologiesByRecommender):
-            if onto == ontology or ontology in onto:
-                print onto 
-                print i
+            if onto == ontology or ontology in onto:#found ontology presented in metabolight study
                 break
     #take into account the position in Recommender!!
     #FORMULA: (1 / (Position_TOP / TOP_Size) + 0.2 ) / 5 ---Equal to---> TOP_Size / ((5*Position_TOP) + 2 * TOP_Size)
     TOP_Size = len(OntologiesByRecommender)
-    Position_TOP = i+1
+    Position_TOP = i+1#because start at zero
     score += TOP_Size/((5*Position_TOP)+2*TOP_Size)
-    print TOP_Size
-    print TOP_Size/((5*Position_TOP)+2*TOP_Size)
-    print score
-    print treedepth
-    print haschildren  
+    #print TOP_Size
+    #print TOP_Size/((5*Position_TOP)+2*TOP_Size)
+    #print score
+    #print treedepth
+    #print haschildren  
     
     return score      
     
